@@ -1,0 +1,29 @@
+name: GitHub Workflow 실습1
+
+run-name: ~워크플로우 실행~
+
+on: [push, pull_request]
+
+jobs:
+    GitHub-Workflow-Practice:
+        runs-on: ubuntu-latest  # 환경 설정
+        
+        # strategy:
+        #     matrix:
+        #         python-version: [3.8, 3.9, '3.10']
+
+        steps:
+            - uses: actions/checkout@v4
+            
+            - name: Python 환경 설정
+              uses: actions/setup-python@v5
+              with:
+                python-version: 3.9
+            
+            - name: Python 패키지 설치
+              run: |
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+
+            - name: 테스트 실행
+              run: pytest
