@@ -1,43 +1,41 @@
-name: 실습4
-
-run-name: 실습4 데이터베이스 서비스 컨테이너 활용
+name: Database Integration Test
 
 on: [push, pull_request]
 
 jobs:
-    container-job:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres
-                env:
-                    POSTGRES_USER: test_user
-                    POSTGRES_PASSWORD: test_password
-                    POSTGRES_DB: test_db
-                ports:
-                    - 5432:5432
-                options: >-
-                    --health-cmd "pg_isready -U test_user"
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retires 5
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test_user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-        steps:
-            - uses: actions/checkout@v4
-            - name: Set up Python
-              uses: actions/setup-python@v5
-              with:
-                python-version: '3.9'
-            - name: Install dependencies
-              run: |
-                  python -m pip install --upgrade pip
-                  pip install -r requirements.txt
-            - name: Run Integration Tests
-              run: |
-                python client.py
-              env:
-                POSTGRES_HOST: localhost
-                POSTGRES_PORT: 5432
-                POSTGRES_USER: test_user
-                POSTGRES_PASSWORD: test_password
-                POSTGRES_DB: test_db
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run integration tests
+        run: |
+          python client.py
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
